@@ -1,0 +1,9 @@
+[
+"Klout",
+"Facebook",
+"Twitter",
+"Spling",
+"Kwelia",
+"Stack Overflow",
+"CrunchBase"
+]

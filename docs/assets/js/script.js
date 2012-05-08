@@ -7,6 +7,8 @@ $(function(){
 	$("#button1").on("click", requestCompany1);
 	$("#button2").on("click", requestCompany2);
 	dropDownList();
+	blurFocus(1);
+	blurFocus(2);
 });
 
 function dropDownList (evt) {
@@ -219,3 +221,22 @@ var stillFighting = function(data, num) {
 	console.log($("tr[data-key='deadpooled_year'] td").get(num))
 }
 
+
+//Blur/Focus
+
+var blurFocus = function(num) {
+$('#company' + num + 'Input').focus(function() {
+        if ($('#company' + num + 'Input').val() === "Company Name") {
+            $('#company' + num + 'Input').val("");
+	    console.log('focused');
+        }
+    })
+
+$('#company' + num + 'Input').blur(function() {
+        if ($('#company' + num + 'Input').val() === "") {
+            $('#company' + num + 'Input').val("Company Name");
+	    console.log('blurred');
+        }
+    })
+
+}

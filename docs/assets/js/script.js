@@ -14,14 +14,25 @@ function dropDownList (evt) {
 	var companyArray = [];
 	$.ajax({
 		//url : 'http://api.crunchbase.com/v/1/companies.js', 
-		url: 'companyarray.txt',
+		//url: 'companyarray.txt',
+		url: 'assets/data/companyList.js',
 		dataType: 'json',
 		success: function(data) {
-			console.log(data);
+			console.log('dropdownsuccess');
+			nameList = []
 			
+			
+			/*for (i = 0; i < data.length; i++) {
+				companyName = data[i]["name"];
+				//console.log(data[i]["name"])
+				nameList[i] = companyName;
+			}
+			
+			console.log(data.length);
+			console.log(nameList);
+			*/
 			$('#company1Input').data('source', data);
-			console.log($('#company1Input').data());
-			console.log(data);
+			
 			
 			$('#company2Input').data('source', data);
 			console.log($('#company2Input').data('source'));
@@ -43,26 +54,23 @@ function requestCompany1 (evt) {
 		data: company1,
 		success: function(data) {
 			console.log(data);
-			$($(".companyName:nth-child(2)").get(0))
-				.html(data["name"])
-				.addClass('companyName');
-			console.log($(".companyName:nth-child(2)").get(0));
+			
+			propertyTable(data, 1);
 				
-			var propertyList = ["homepage_url", "number_of_employees", "founded_year", "tag_list",
-						     "overview", "total_money_raised"];
-			for (i = 0; i < propertyList.length; i++) {
-				$($("tr[data-key='" + propertyList[i] + "'] td").get(1)).html(data[propertyList[i]]);
-				console.log($("tr[data-key='" + propertyList[i] + "'] td").get(1));
-				}
 			console.log(data["name"]);	
+			
 			importantPeople($("#founders1"), data);
+			
 			imageGrab(data);
+			
 			hyperLinked(data, 1, 'blog_url');
 			hyperLinked(data, 1, 'twitter_username');
+			
 			return false;
 			}
 		});
 };
+
 
 
 function requestCompany2 (evt) {
@@ -78,36 +86,48 @@ function requestCompany2 (evt) {
 		data: company2,
 		success: function(data) {
 			console.log(data);
-		
-			$($(".companyName:nth-child(2)").get(1))
-				.html(data["name"])
-				.addClass('companyName');
-			console.log($(".companyName:nth-child(2)").get(1));
+
+			propertyTable(data, 2);
 			
-			var propertyList = ["homepage_url", "number_of_employees", "founded_year", "tag_list",
-					     "overview", "total_money_raised"]
-			
-			for (i = 0; i < propertyList.length; i++) {
-				$($("tr[data-key='" + propertyList[i] + "'] td").get(2)).html(data[propertyList[i]]);
-				console.log($("tr[data-key='" + propertyList[i] + "'] td").get(2));
-				}
 			hyperLinked(data, 2, 'blog_url');
 			hyperLinked(data, 2, 'twitter_username');
+			
+			//function not working
 			TCposts(2, data["name"]);
 			
-				
 			importantPeople($('#founders2'), data);
+			
 			imageGrab(data);
 			return false;
 		}
 		});
 }
 
+//ADDING THE GENERAL PROPERTIES TO THE TABLE-- EXCEPTIONS DONE BELOW
+var propertyTable = function(data, num) {
+	//adding company name and css class for styling on it
+	$($(".companyName:nth-child(2)").get(num - 1))
+		.html(data["name"])
+		.addClass('companyName');
+	console.log($(".companyName:nth-child(2)").get(num - 1));
+	
+	//general properties in table -- exceptions are dont seperately
+	var propertyList = ["homepage_url", "number_of_employees", "founded_year", "tag_list",
+						     "overview", "total_money_raised"];
+	for (i = 0; i < propertyList.length; i++) {
+		$($("tr[data-key='" + propertyList[i] + "'] td").get(num)).html(data[propertyList[i]]);
+		//console.log($("tr[data-key='" + propertyList[i] + "'] td").get(1));
+		}
+				
+}
+
+//MAKING QUERY LOWERCASE AND HAVE "-" INSTEAD OF SPACES IN MULTI-WORD QUERIES
 var queryFixing = function (string) {
 	string = string.toLowerCase();
 	var letterArray = string.split('');
 	console.log(letterArray);
 
+	//fixing multi-word queries so spaces are replaced with "-"
 	var spacePos = letterArray.indexOf(' ');
 	console.log(spacePos);
 	letterArray[spacePos] = '-';
@@ -118,6 +138,7 @@ var queryFixing = function (string) {
 	return fixedName2
 }
 
+//CREATING A LIST OF UP TO THE FIRST 6 PEOPLE LISTED
 var importantPeople = function (div, data) {
 	var founderArray = [];
 	i = 0;
@@ -127,16 +148,15 @@ var importantPeople = function (div, data) {
 			break
 		}
 		
-	var firstName = data['relationships'][person]['person']['first_name'];
-	var lastName = data['relationships'][person]['person']['last_name'];
-	founderArray[person] = firstName + " " + lastName;
+		var firstName = data['relationships'][person]['person']['first_name'];
+		var lastName = data['relationships'][person]['person']['last_name'];
+		founderArray[person] = firstName + " " + lastName;
 	
-	console.log(founderArray);
-	console.log(founderArray.join(", "));
-	arrayToStr = founderArray.join(", ");
-	i++;
+		
+		arrayToStr = founderArray.join(", ");
+		i++;
 	}
-	console.log(div);
+	console.log(arrayToStr);
 	div.text(arrayToStr);
 }
 
@@ -144,24 +164,26 @@ var hyperLinked = function (data, number, dataSection) {
 	if (dataSection == 'twitter_username') {
 		$($("tr[data-key='" + dataSection + "'] td").get(number)).html("<a href='www.twitter.com/" + data[dataSection] + "'>" + data[dataSection] + "</a>");
 	}
-	else {
+	else if (dataSection == 'blog_url') {
 		$($("tr[data-key='" + dataSection + "'] td").get(number)).html("<a href='" + data[dataSection] + "'>" + data[dataSection] + "</a>");
 	}
 	
 }
 var imageGrab = function (data) {
-	//still needs work
-	if (data["image"]) {
-	var imageExtension = data["image"]["available_sizes"][0][1];
-	var logoURL = 'http://www.crunchbase.com/' + imageExtension;
-	console.log(imageExtension);
-	console.log(logoURL);
+	if (data["image"] != null) {
+		var imageExtension = data["image"]["available_sizes"][0][1];
+		var logoURL = 'http://www.crunchbase.com/' + imageExtension;
+		console.log(imageExtension);
+		console.log(logoURL);
 	
-	$('#logo1').attr('src', logoURL);
-	$('#logo1').attr('style', 'margin-left: 25px; float: left; height: 50px; width: auto; margin-top: 5%; margin-bottom: 5%');
+		$('#logo1').attr('src', logoURL);
+		$('#logo1').attr('style', 'margin-left: 25px; float: left; height: 50px; width: auto; margin-top: 5%; margin-bottom: 5%');
 	
-	console.log($('#logo1'));
-	};
+		console.log($('#logo1'));
+	}
+	else {
+		$('#logo1').attr('src', '');
+	}
 }
 
 var TCposts = function (num, company) {

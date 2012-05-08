@@ -14,8 +14,9 @@ choose which categories to have
 
 css bug where title is not vertically aligned with the logo
 
-investor list
-    highlight in blue ones that are the same
+investor list function doesnt work.. have to go through api and figure out patterns
+    
+highlight in blue investors that are the same
 
 TC posts count not working
 

@@ -40,7 +40,6 @@ function dropDownList (evt) {
 	});
 }
 
-
 function requestCompany1 (evt) {
 	console.log("company 1 request fired");
 	var company1 = $('#company1Input').val()
@@ -52,6 +51,15 @@ function requestCompany1 (evt) {
 		url : url1,
 		dataType: 'json',
 		data: company1,
+		/*error: function (jqXHR, textStatus, errorThrown) {
+			console.log('ajax error triggered');
+			alert(errorThrown);
+		},
+		statusCode: {
+			404: function() {
+			alert("page not found");
+		}
+		},*/
 		success: function(data) {
 			console.log(data);
 			
@@ -67,6 +75,8 @@ function requestCompany1 (evt) {
 			hyperLinked(data, 1, 'twitter_username');
 			
 			stillFighting(data, 1);
+			
+			investorList(data, 1);
 			//not working see below
 			//TCposts(1, data['name']);
 			
@@ -220,6 +230,39 @@ var stillFighting = function(data, num) {
 		$($("tr[data-key='deadpooled_year'] td").get(num)).html('Still fighting!');
 	}
 	console.log($("tr[data-key='deadpooled_year'] td").get(num))
+}
+
+var investorList = function(data, num) {
+	var fundingRounds = data["funding_rounds"];
+	var finalInvestorList = []
+	
+	
+	for (i=0; i < fundingRounds.length; i++) {
+		var investments = data["funding_rounds"][i]["investments"];
+		var round = data["funding_rounds"][i];
+		for (i=0; i < investments.length; i++) {
+			var financialOrgObject = round["investments"][i]["financial_org"];
+			
+			var angelObject = round["investments"][i]["person"];
+			
+			
+			if (angelObject != null) {
+				console.log("angel fired");
+				var angel = angelObject["first_name"] + " " + angelObject["last_name"];
+				finalInvestorList[i] = angel;
+			}
+		
+			if (financialOrg != null) {
+				console.log("financial_org fired");
+				console.log(financialOrgObject['name']);
+				var financialOrg = financialOrgObject["name"]
+				finalInvestorList[i] = financialOrg
+			}
+		
+		}
+	}
+	console.log(finalInvestorList);
+	
 }
 
 

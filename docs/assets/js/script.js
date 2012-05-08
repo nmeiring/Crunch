@@ -13,7 +13,8 @@ function dropDownList (evt) {
 	console.log("dropdownfired");
 	var companyArray = [];
 	$.ajax({
-		url : 'companyarray.txt', 
+		//url : 'http://api.crunchbase.com/v/1/companies.js', 
+		url: 'companyarray.txt',
 		dataType: 'json',
 		success: function(data) {
 			console.log(data);
@@ -91,8 +92,8 @@ function requestCompany2 (evt) {
 				console.log($("tr[data-key='" + propertyList[i] + "'] td").get(2));
 				}
 			hyperLinked(data, 2, 'blog_url');
-			hyperLinked(data, 2, 'twitter_username')
-			
+			hyperLinked(data, 2, 'twitter_username');
+			TCposts(2, data["name"]);
 			
 				
 			importantPeople($('#founders2'), data);
@@ -149,7 +150,30 @@ var hyperLinked = function (data, number, dataSection) {
 	
 }
 var imageGrab = function (data) {
+	//still needs work
 	if (data["image"]) {
-	console.log(data["image"]["available_sizes"][0])
+	var imageExtension = data["image"]["available_sizes"][0][1];
+	var logoURL = 'http://www.crunchbase.com/' + imageExtension;
+	console.log(imageExtension);
+	console.log(logoURL);
+	
+	$('#logo1').attr('src', logoURL);
+	$('#logo1').attr('style', 'margin-left: 25px; float: left; height: 50px; width: auto; margin-top: 5%; margin-bottom: 5%');
+	
+	console.log($('#logo1'));
 	};
 }
+
+var TCposts = function (num, company) {
+	$.ajax({
+		url: 'http://api.crunchbase.com/v/1/companies/posts?name=' + company,
+		//data: company,
+		dataType: JSON,
+		success: function (data) {
+			$('#posts' + num).text(data['num_posts']);
+			console.log(data['num_posts']);
+			console.log('#posts' + num);
+		}
+	})
+}
+

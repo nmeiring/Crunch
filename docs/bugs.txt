@@ -19,3 +19,6 @@ company name drop down list
 
 hyperlinking twitter handles
     still need to make it go to twitter.com/facebook instead of localhost/crunch/www.twitter.com/facebook
+
+investor list
+    highlight in blue ones that are the same

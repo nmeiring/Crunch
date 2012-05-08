@@ -758,14 +758,14 @@ i[class^="icon-"]{opacity:0.8;}
    width: 80%;
 }
 #infoTopRow {
-    font-size: 36px;
+    
     
 }
 .companyName {
 margin-left: 25px;
 float: left;
-vertical-align: middle;
-font-size: 36px;
+font-size: 40px;
+height: 40px;
 margin-top: 5%;
 margin-bottom: 5%;
 }

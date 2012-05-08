@@ -33,9 +33,7 @@ function dropDownList (evt) {
 			*/
 			$('#company1Input').data('source', data);
 			
-			
 			$('#company2Input').data('source', data);
-			console.log($('#company2Input').data('source'));
 		}
 	});
 }
@@ -61,10 +59,14 @@ function requestCompany1 (evt) {
 			
 			importantPeople($("#founders1"), data);
 			
-			imageGrab(data);
+			imageGrab(data, 1);
 			
 			hyperLinked(data, 1, 'blog_url');
 			hyperLinked(data, 1, 'twitter_username');
+			
+			stillFighting(data, 1);
+			//not working see below
+			//TCposts(1, data['name']);
 			
 			return false;
 			}
@@ -85,19 +87,21 @@ function requestCompany2 (evt) {
 		dataType: 'json',
 		data: company2,
 		success: function(data) {
-			console.log(data);
+		console.log(url2);
 
 			propertyTable(data, 2);
 			
 			hyperLinked(data, 2, 'blog_url');
 			hyperLinked(data, 2, 'twitter_username');
 			
-			//function not working
-			TCposts(2, data["name"]);
+			//Access-Control-Allow-Origin error on api call
+			//TCposts(2, data['name']);
 			
 			importantPeople($('#founders2'), data);
 			
-			imageGrab(data);
+			imageGrab(data, 2);
+			
+			stillFighting(data, 2);
 			return false;
 		}
 		});
@@ -160,24 +164,24 @@ var importantPeople = function (div, data) {
 	div.text(arrayToStr);
 }
 
-var hyperLinked = function (data, number, dataSection) {
+var hyperLinked = function (data, num, dataSection) {
 	if (dataSection == 'twitter_username') {
-		$($("tr[data-key='" + dataSection + "'] td").get(number)).html("<a href='www.twitter.com/" + data[dataSection] + "'>" + data[dataSection] + "</a>");
+		$($("tr[data-key='" + dataSection + "'] td").get(num)).html("<a href='www.twitter.com/" + data[dataSection] + "'>" + data[dataSection] + "</a>");
 	}
 	else if (dataSection == 'blog_url') {
-		$($("tr[data-key='" + dataSection + "'] td").get(number)).html("<a href='" + data[dataSection] + "'>" + data[dataSection] + "</a>");
+		$($("tr[data-key='" + dataSection + "'] td").get(num)).html("<a href='" + data[dataSection] + "'>" + data[dataSection] + "</a>");
 	}
 	
 }
-var imageGrab = function (data) {
+var imageGrab = function (data, num) {
 	if (data["image"] != null) {
 		var imageExtension = data["image"]["available_sizes"][0][1];
 		var logoURL = 'http://www.crunchbase.com/' + imageExtension;
 		console.log(imageExtension);
 		console.log(logoURL);
 	
-		$('#logo1').attr('src', logoURL);
-		$('#logo1').attr('style', 'margin-left: 25px; float: left; height: 50px; width: auto; margin-top: 5%; margin-bottom: 5%');
+		$('#logo' + num).attr('src', logoURL);
+		$('#logo1' + num).attr('style', 'margin-left: 25px; float: left; height: 50px; width: auto; margin-top: 5%; margin-bottom: 5%');
 	
 		console.log($('#logo1'));
 	}
@@ -186,16 +190,32 @@ var imageGrab = function (data) {
 	}
 }
 
+//Access-Control-Allow-Origin error on api call
 var TCposts = function (num, company) {
+	console.log('tcpost function fired');
 	$.ajax({
 		url: 'http://api.crunchbase.com/v/1/companies/posts?name=' + company,
-		//data: company,
+		//data: company, -- doesnt work because it appends &company instead of just company
 		dataType: JSON,
 		success: function (data) {
+			console.log(url);
 			$('#posts' + num).text(data['num_posts']);
 			console.log(data['num_posts']);
 			console.log('#posts' + num);
 		}
 	})
+}
+
+var stillFighting = function(data, num) {
+	var deadYear = data["deadpooled_year"]
+	console.log(deadYear);
+	if (deadYear != null) {
+		$($("tr[data-key='deadpooled_year'] td").get(num)).html('RIP ' + data["name"] + ': ' + deadYear);
+		console.log('dead comp fire');
+	}
+	else {
+		$($("tr[data-key='deadpooled_year'] td").get(num)).html('Still fighting!');
+	}
+	console.log($("tr[data-key='deadpooled_year'] td").get(num))
 }
 

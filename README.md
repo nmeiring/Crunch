@@ -1,5 +1,7 @@
 README
 
+mac wrote this
+
 Crunch-Off lets you compare company information side by side. (info from CrunchBase)
 
 TO DO List:

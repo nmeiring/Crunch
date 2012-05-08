@@ -122,6 +122,7 @@ var propertyTable = function(data, num) {
 						     "overview", "total_money_raised"];
 	for (i = 0; i < propertyList.length; i++) {
 		$($("tr[data-key='" + propertyList[i] + "'] td").get(num)).html(data[propertyList[i]]);
+		//console.log(propertyList[i])
 		//console.log($("tr[data-key='" + propertyList[i] + "'] td").get(1));
 		}
 				

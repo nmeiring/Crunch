@@ -12,8 +12,6 @@ resizing title so it fits with the image in the box
     
 choose which categories to have
 
-css bug where title is not vertically aligned with the logo
-
 investor list function doesnt work.. have to go through api and figure out patterns
     
 highlight in blue investors that are the same
@@ -30,3 +28,4 @@ hyperlinking twitter handles
 company name drop down list
 grabbing correct thumbnail
     assets/images/resized/0000/4561/4561v1-max-150x150.png
+css bug where title is not vertically aligned with the logo

@@ -236,37 +236,45 @@ var investorList = function(data, num) {
 	var fundingRounds = data["funding_rounds"];
 	var finalInvestorList = []
 	console.log(fundingRounds.length)
+	i = 0;
 	
-	
-	for (i=0; i < fundingRounds.length; i++) {
-		var investments = data["funding_rounds"][i]["investments"];
+	for (x=0; x < fundingRounds.length; x++) {
+		var investments = data["funding_rounds"][x]["investments"];
 		console.log(data["funding_rounds"][1]["investments"]); //correctly logs the dreamit round for spling
-		var round = data["funding_rounds"][i];
-		console.log('round' + i);
-		for (i=0; i < investments.length; i++) {
+		var round = data["funding_rounds"][x];
+		console.log('round' + x);
+		for (y=0; y < investments.length; y++) {
 		
-			var angelObject = round["investments"][i]["person"];
+			var angelObject = round["investments"][y]["person"];
 			if (angelObject != null) {
 				console.log("angel fired");
 				var angel = angelObject["first_name"] + " " + angelObject["last_name"];
-				finalInvestorList[i] = angel;
+				if (!(angel in finalInvestorList)) {
+					finalInvestorList[i] = angel;
+				}
 			}
 			
-			var financialOrgObject = round["investments"][i]["financial_org"];
+			var financialOrgObject = round["investments"][y]["financial_org"];
 			if (financialOrgObject != null) {
 				console.log("financial_org fired");
 				console.log(financialOrgObject['name']);
 				var financialOrg = financialOrgObject["name"]
-				finalInvestorList[i] = financialOrg
+				if (!(financialOrg in finalInvestorList)) {
+					finalInvestorList[i] = financialOrg;
+				}
 			}
 			
-			var companyObject = round['investments'][i]["company"];
+			var companyObject = round['investments'][y]["company"];
 			if (companyObject != null) {
 				console.log('company fired');
 			}
+                        
+                        i = i + 1
 		}
 	}
 	console.log(finalInvestorList);
+	investorListToStr = finalInvestorList.join(", ");
+	$($("tr[data-key='funding_rounds'] td").get(num)).html(investorListToStr);
 	
 }
 

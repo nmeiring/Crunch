@@ -247,9 +247,20 @@ var stillFighting = function(data, num) {
 
 var investorList = function(data, num) {
 	var fundingRounds = data["funding_rounds"];
+	console.log(fundingRounds);
+	console.log("here");
 	var finalInvestorArr = [];
 	console.log(fundingRounds.length);
 	i = 0;
+	
+	//for (x=0; x < fundingRounds.length; x++) {
+	//	tempRound = data["funding_rounds"][x]["investments"];
+	//	if (tempRound) {
+	//		if (tempRound["company"]==null) {
+	//			break
+	//		}
+	//	}
+	//}
 	
 	for (x=0; x < fundingRounds.length; x++) {
 		if (data["funding_rounds"][x]) {
@@ -259,8 +270,10 @@ var investorList = function(data, num) {
 			break
 		}
 		var round = data["funding_rounds"][x];
-		console.log('round' + x);
+		console.log('round ' + x);
 		for (y=0; y < investments.length; y++) {
+			
+			
 		
 			var angelObject = round["investments"][y]["person"];
 			if (angelObject != null) {
@@ -294,7 +307,21 @@ var investorList = function(data, num) {
 	}
 	console.log(finalInvestorArr); //array
 	
-	finalInvestorStr = String(finalInvestorArr);
+	function eliminateDuplicates (an_array) {
+		var i, len = an_array.length, refinedList = [], obj = {};
+
+		for (i = 0; i < len; i++) {
+			obj[an_array[i]]=0;
+		}
+		for (i in obj) {
+			refinedList.push(i);
+		}
+		return refinedList;
+	}
+	the_list = eliminateDuplicates(finalInvestorArr)
+	var finalInvestorStr = the_list.join(', ')
+	
+//	finalInvestorStr = String(the_list);
 	$($("tr[data-key='funding_rounds'] td").get(num)).html(finalInvestorStr);
 	
 	matchingInvestors(data, num, finalInvestorArr);

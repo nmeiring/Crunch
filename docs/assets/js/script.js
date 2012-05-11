@@ -114,6 +114,8 @@ function requestCompany2 (evt) {
 			imageGrab(data, 2);
 			
 			stillFighting(data, 2);
+			
+			investorList(data, 2);
 			return false;
 		}
 		});
@@ -122,10 +124,21 @@ function requestCompany2 (evt) {
 //ADDING THE GENERAL PROPERTIES TO THE TABLE-- EXCEPTIONS DONE BELOW
 var propertyTable = function(data, num) {
 	//adding company name and css class for styling on it
-	$($(".companyName:nth-child(2)").get(num - 1))
+	var companyName = $($(".companyName:nth-child(2)").get(num - 1));
+	$(companyName)
 		.html(data["name"])
 		.addClass('companyName');
 	console.log($(".companyName:nth-child(2)").get(num - 1));
+	console.log(companyName);
+	if(companyName.length > 10) {
+		console.log("greater than 10!")
+		companyName.attr("font-size", 30);
+	}
+	else if (companyName.length <= 10) {
+		console.log("less than 10!")
+		companyName.attr("font-size", 40);
+	}
+	console.log(companyName.attr("font-size"));
 	
 	//general properties in table -- exceptions are dont seperately
 	var propertyList = ["homepage_url", "number_of_employees", "founded_year", "tag_list",
@@ -234,13 +247,17 @@ var stillFighting = function(data, num) {
 
 var investorList = function(data, num) {
 	var fundingRounds = data["funding_rounds"];
-	var finalInvestorList = []
-	console.log(fundingRounds.length)
+	var finalInvestorList = [];
+	console.log(fundingRounds.length);
 	i = 0;
 	
 	for (x=0; x < fundingRounds.length; x++) {
-		var investments = data["funding_rounds"][x]["investments"];
-		console.log(data["funding_rounds"][1]["investments"]); //correctly logs the dreamit round for spling
+		if (data["funding_rounds"][x]) {
+			var investments = data["funding_rounds"][x]["investments"];
+		}
+		else {
+			break
+		}
 		var round = data["funding_rounds"][x];
 		console.log('round' + x);
 		for (y=0; y < investments.length; y++) {
@@ -249,7 +266,7 @@ var investorList = function(data, num) {
 			if (angelObject != null) {
 				console.log("angel fired");
 				var angel = angelObject["first_name"] + " " + angelObject["last_name"];
-				if (!(angel in finalInvestorList)) {
+				if ($.inArray(angel, finalInvestorList)) {
 					finalInvestorList[i] = angel;
 				}
 			}
@@ -259,7 +276,7 @@ var investorList = function(data, num) {
 				console.log("financial_org fired");
 				console.log(financialOrgObject['name']);
 				var financialOrg = financialOrgObject["name"]
-				if (!(financialOrg in finalInvestorList)) {
+				if ($.inArray(financialOrg, finalInvestorList)) {
 					finalInvestorList[i] = financialOrg;
 				}
 			}
@@ -267,13 +284,41 @@ var investorList = function(data, num) {
 			var companyObject = round['investments'][y]["company"];
 			if (companyObject != null) {
 				console.log('company fired');
+				var company = companyObject["name"];
+				if ($.inArray(financialOrg, finalInvestorList)) {
+					finalInvestorList[i] = company;
+				}
 			}
                         
                         i = i + 1
 		}
 	}
-	console.log(finalInvestorList);
+	console.log(finalInvestorList); //array
 	investorListToStr = finalInvestorList.join(", ");
+	console.log(investorListToStr); //string
+	console.log($($("tr[data-key='funding_rounds'] td").get(1)).html());
+	if (num == 1 && $($("tr[data-key='funding_rounds'] td").get(1)).html() != "") {
+		var otherList = ($($("tr[data-key='funding_rounds'] td").get(2)).html()).split(",");
+		console.log(otherList); //string
+	}
+	else if (num == 2 && $($("tr[data-key='funding_rounds'] td").get(1)).html() != "") {
+		var otherList = ($($("tr[data-key='funding_rounds'] td").get(1)).html()).split(',');
+		console.log(otherList); //string
+	}
+	
+	var investorArray = investorListToStr.split(',');
+	
+	for (z=0; z < finalInvestorList.length; z++) {
+		if (otherList) {
+			if (($.inArray(finalInvestorList[z], otherList)) != 0) {
+				console.log('MATCHING INVESTORS');
+				console.log(otherList);
+				console.log(finalInvestorList[z]);
+				console.log(($.inArray(finalInvestorList[z], otherList)));
+			}
+		}
+	}
+	
 	$($("tr[data-key='funding_rounds'] td").get(num)).html(investorListToStr);
 	
 }

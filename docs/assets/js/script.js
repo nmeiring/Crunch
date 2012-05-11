@@ -311,23 +311,30 @@ var matchingInvestors = function(data, num, finalInvestorArr) {
 	}
 	
 	var otherList = $($("tr[data-key='funding_rounds'] td").get(temp)).html();
-		console.log(otherList);
-		var splitOtherList = otherList.split(',');
-		console.log(splitOtherList);
+	console.log(otherList); //string
 	
-	for (z=0; z < finalInvestorArr.length; z++) {
-		if (otherList) {
-			if (($.inArray(finalInvestorArr[z], splitOtherList)) != -1) {
-				console.log('MATCHING INVESTORS');
-				console.log(finalInvestorArr[z]);
-				console.log(($.inArray(finalInvestorArr[z], splitOtherList )));
-				var matchingInv = finalInvestorArr[z];
-				
-			}
+	var splitOtherList = otherList.split(',');
+	console.log(splitOtherList); // array
+	
+	var matchingArr = [];
+
+	$.each(finalInvestorArr, function(a, val) {
+		if ($.inArray(val, splitOtherList) !== -1) {
+			matchingArr.push(val);
 		}
-	};
+	});
+	console.log(matchingArr);
+	
+	blueInvestors(data, num, matchingArr, splitOtherList);
 	
 }
+
+var blueInvestors = function(data, num, matchingArr, splitOtherList) {
+	
+	
+};
+
+
 
 
 //Blur/Focus

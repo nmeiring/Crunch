@@ -247,7 +247,7 @@ var stillFighting = function(data, num) {
 
 var investorList = function(data, num) {
 	var fundingRounds = data["funding_rounds"];
-	var finalInvestorList = [];
+	var finalInvestorArr = [];
 	console.log(fundingRounds.length);
 	i = 0;
 	
@@ -266,18 +266,17 @@ var investorList = function(data, num) {
 			if (angelObject != null) {
 				console.log("angel fired");
 				var angel = angelObject["first_name"] + " " + angelObject["last_name"];
-				if ($.inArray(angel, finalInvestorList)) {
-					finalInvestorList[i] = angel;
+				if ($.inArray(angel, finalInvestorArr)) {
+					finalInvestorArr[i] = angel;
 				}
 			}
 			
 			var financialOrgObject = round["investments"][y]["financial_org"];
 			if (financialOrgObject != null) {
 				console.log("financial_org fired");
-				console.log(financialOrgObject['name']);
 				var financialOrg = financialOrgObject["name"]
-				if ($.inArray(financialOrg, finalInvestorList)) {
-					finalInvestorList[i] = financialOrg;
+				if ($.inArray(financialOrg, finalInvestorArr)) {
+					finalInvestorArr[i] = financialOrg;
 				}
 			}
 			
@@ -285,41 +284,48 @@ var investorList = function(data, num) {
 			if (companyObject != null) {
 				console.log('company fired');
 				var company = companyObject["name"];
-				if ($.inArray(financialOrg, finalInvestorList)) {
-					finalInvestorList[i] = company;
+				if ($.inArray(financialOrg, finalInvestorArr)) {
+					finalInvestorArr[i] = company;
 				}
 			}
                         
                         i = i + 1
 		}
 	}
-	console.log(finalInvestorList); //array
-	investorListToStr = finalInvestorList.join(", ");
-	console.log(investorListToStr); //string
-	console.log($($("tr[data-key='funding_rounds'] td").get(1)).html());
-	if (num == 1 && $($("tr[data-key='funding_rounds'] td").get(1)).html() != "") {
-		var otherList = ($($("tr[data-key='funding_rounds'] td").get(2)).html()).split(",");
-		console.log(otherList); //string
+	console.log(finalInvestorArr); //array
+	
+	finalInvestorStr = String(finalInvestorArr);
+	$($("tr[data-key='funding_rounds'] td").get(num)).html(finalInvestorStr);
+	
+	matchingInvestors(data, num, finalInvestorArr);
+	
+}
+
+var matchingInvestors = function(data, num, finalInvestorArr) {
+	console.log("attempting to match investors");
+	if (num == 1) {
+		var temp = 2;
 	}
-	else if (num == 2 && $($("tr[data-key='funding_rounds'] td").get(1)).html() != "") {
-		var otherList = ($($("tr[data-key='funding_rounds'] td").get(1)).html()).split(',');
-		console.log(otherList); //string
+	else if (num == 2) {
+		var temp = 1;
 	}
 	
-	var investorArray = investorListToStr.split(',');
+	var otherList = $($("tr[data-key='funding_rounds'] td").get(temp)).html();
+		console.log(otherList);
+		var splitOtherList = otherList.split(',');
+		console.log(splitOtherList);
 	
-	for (z=0; z < finalInvestorList.length; z++) {
+	for (z=0; z < finalInvestorArr.length; z++) {
 		if (otherList) {
-			if (($.inArray(finalInvestorList[z], otherList)) != 0) {
+			if (($.inArray(finalInvestorArr[z], splitOtherList)) != -1) {
 				console.log('MATCHING INVESTORS');
-				console.log(otherList);
-				console.log(finalInvestorList[z]);
-				console.log(($.inArray(finalInvestorList[z], otherList)));
+				console.log(finalInvestorArr[z]);
+				console.log(($.inArray(finalInvestorArr[z], splitOtherList )));
+				var matchingInv = finalInvestorArr[z];
+				
 			}
 		}
-	}
-	
-	$($("tr[data-key='funding_rounds'] td").get(num)).html(investorListToStr);
+	};
 	
 }
 

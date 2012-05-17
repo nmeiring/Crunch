@@ -51,21 +51,13 @@ function requestCompany1 (evt) {
 		url : url1,
 		dataType: 'json',
 		data: company1,
-		/*error: function (jqXHR, textStatus, errorThrown) {
-			console.log('ajax error triggered');
-			alert(errorThrown);
+		error: function() {
+			window.alert("Sorry! Company not found");
 		},
-		statusCode: {
-			404: function() {
-			alert("page not found");
-		}
-		},*/
 		success: function(data) {
-			console.log(data);
+			clearTable(1);
 			
-			propertyTable(data, 1);
-				
-			console.log(data["name"]);	
+			propertyTable(data, 1);	
 			
 			importantPeople($("#founders1"), data);
 			
@@ -73,6 +65,7 @@ function requestCompany1 (evt) {
 			
 			hyperLinked(data, 1, 'blog_url');
 			hyperLinked(data, 1, 'twitter_username');
+			hyperLinked(data, 1, 'homepage_url');
 			
 			stillFighting(data, 1);
 			
@@ -98,13 +91,18 @@ function requestCompany2 (evt) {
 		url : url2,
 		dataType: 'json',
 		data: company2,
+		error: function() {
+			window.alert("Sorry! Company not found");
+		},
 		success: function(data) {
-		console.log(url2);
+			clearTable(2);
+			console.log(url2);
 
 			propertyTable(data, 2);
 			
 			hyperLinked(data, 2, 'blog_url');
 			hyperLinked(data, 2, 'twitter_username');
+			hyperLinked(data, 2, 'homepage_url');
 			
 			//Access-Control-Allow-Origin error on api call
 			//TCposts(2, data['name']);
@@ -121,8 +119,25 @@ function requestCompany2 (evt) {
 		});
 }
 
+//Clearing the table first
+var clearTable = function (num) {
+	var tableRows = $('tr');
+	var tableData = $('tr > td');
+	$.each(tableData, function(a, val) {
+		if (tableData.index(val) % 3 == 0) {
+			console.log('not changing');
+		}
+		else if (tableData.index(val) % 3 == num){
+			console.log(val);
+			$(val).text('');
+		}
+	});
+}
 //ADDING THE GENERAL PROPERTIES TO THE TABLE-- EXCEPTIONS DONE BELOW
 var propertyTable = function(data, num) {
+	//creating the companyName and img divs
+	$($('tr > td')[num]).html('<img id="logo' + num + '"><div class="companyName" id="companyName' + num + '" ></div>')
+	console.log($('tr > td')[num]);
 	//adding company name and css class for styling on it
 	var companyName = $($(".companyName:nth-child(2)").get(num - 1));
 	$(companyName)
@@ -141,13 +156,15 @@ var propertyTable = function(data, num) {
 	console.log(companyName.attr("font-size"));
 	
 	//general properties in table -- exceptions are dont seperately
-	var propertyList = ["homepage_url", "number_of_employees", "founded_year", "tag_list",
+	var propertyList = ["number_of_employees", "founded_year", "tag_list",
 						     "overview", "total_money_raised"];
 	for (i = 0; i < propertyList.length; i++) {
 		$($("tr[data-key='" + propertyList[i] + "'] td").get(num)).html(data[propertyList[i]]);
 		//console.log(propertyList[i])
 		//console.log($("tr[data-key='" + propertyList[i] + "'] td").get(1));
 		}
+		
+		
 				
 }
 
@@ -197,9 +214,13 @@ var hyperLinked = function (data, num, dataSection) {
 	else if (dataSection == 'blog_url') {
 		$($("tr[data-key='" + dataSection + "'] td").get(num)).html("<a href='" + data[dataSection] + "'>" + data[dataSection] + "</a>");
 	}
+	else if (dataSection == 'homepage_url') {
+		$($("tr[data-key='" + dataSection + "'] td").get(num)).html('<a href="' + data[dataSection] + '">' + data[dataSection] + '</a>');
+	}
 	
 }
 var imageGrab = function (data, num) {
+	
 	if (data["image"] != null) {
 		var imageExtension = data["image"]["available_sizes"][0][1];
 		var logoURL = 'http://www.crunchbase.com/' + imageExtension;
@@ -207,12 +228,13 @@ var imageGrab = function (data, num) {
 		console.log(logoURL);
 	
 		$('#logo' + num).attr('src', logoURL);
-		$('#logo1' + num).attr('style', 'margin-left: 25px; float: left; height: 50px; width: auto; margin-top: 5%; margin-bottom: 5%');
+		$('#logo' + num).attr('class','oneLineLogo');
 	
 		console.log($('#logo1'));
 	}
 	else {
-		$('#logo1').attr('src', '');
+		$('#logo' + num).attr('src', '');
+		console.log("no image found");
 	}
 }
 
@@ -318,17 +340,18 @@ var investorList = function(data, num) {
 		}
 		return refinedList;
 	}
-	the_list = eliminateDuplicates(finalInvestorArr)
-	var finalInvestorStr = the_list.join(', ')
+	var arrMinusDuplicates = eliminateDuplicates(finalInvestorArr);
+	var finalInvestorStr = arrMinusDuplicates.join(', ');
+	console.log(arrMinusDuplicates);
 	
 //	finalInvestorStr = String(the_list);
 	$($("tr[data-key='funding_rounds'] td").get(num)).html(finalInvestorStr);
 	
-	matchingInvestors(data, num, finalInvestorArr);
+	matchingInvestors(data, num, arrMinusDuplicates);
 	
 }
 
-var matchingInvestors = function(data, num, finalInvestorArr) {
+var matchingInvestors = function(data, num, arrMinusDuplicates) {
 	console.log("attempting to match investors");
 	if (num == 1) {
 		var temp = 2;
@@ -340,26 +363,55 @@ var matchingInvestors = function(data, num, finalInvestorArr) {
 	var otherList = $($("tr[data-key='funding_rounds'] td").get(temp)).html();
 	console.log(otherList); //string
 	
-	var splitOtherList = otherList.split(',');
+	var splitOtherList = otherList.split(', ');
 	console.log(splitOtherList); // array
+	console.log(arrMinusDuplicates);
+	
+	var sStr = $($("tr[data-key='funding_rounds'] td").get(num)).html();
+	var sStr2 = $($("tr[data-key='funding_rounds'] td").get(temp)).text();
 	
 	var matchingArr = [];
-
-	$.each(finalInvestorArr, function(a, val) {
-		if ($.inArray(val, splitOtherList) !== -1) {
+	
+	//arrMinusDuplicate = array of investors in the requested column
+	//splitOtherList = array of investors in the other column-- function should break if this doesn't exist
+	
+	$.each(arrMinusDuplicates, function(a, val) {
+		if ($.inArray(val, splitOtherList) != -1) {
+			console.log(val);
+			console.log($.inArray(val, splitOtherList))
+			console.log('matched');
 			matchingArr.push(val);
 		}
 	});
-	console.log(matchingArr);
 	
-	blueInvestors(data, num, matchingArr, splitOtherList);
+	var newStr = sStr;
+
+	//go through each string and find the matching values and replace them with a span with that text
+	//give the span a color attribute of red
+	
+	$.each(matchingArr, function(ind, valu) {
+		var patt = new RegExp("(" + valu + ")","g");
+		newStr = newStr.replace(patt,'<span style="color: #CCAD7E;">$1</span>');
+	});
+	
+	$($("tr[data-key='funding_rounds'] td").get(num)).html(newStr);
+	
+	var newStr2 = sStr2;
+	
+	$.each(matchingArr, function(ind, valu) {
+		var patt = new RegExp("(" + valu + ")","g");
+		newStr2 = newStr2.replace(patt,'<span style="color: #CCAD7E;">$1</span>');
+	});
+	
+	$($("tr[data-key='funding_rounds'] td").get(temp)).html(newStr2);
+	
+	console.log(matchingArr);
 	
 }
 
-var blueInvestors = function(data, num, matchingArr, splitOtherList) {
-	
-	
-};
+
+
+
 
 
 
@@ -368,10 +420,7 @@ var blueInvestors = function(data, num, matchingArr, splitOtherList) {
 
 var blurFocus = function(num) {
 $('#company' + num + 'Input').focus(function() {
-        if ($('#company' + num + 'Input').val() === "Company Name") {
             $('#company' + num + 'Input').val("");
-	    console.log('focused');
-        }
     })
 
 $('#company' + num + 'Input').blur(function() {

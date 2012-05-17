@@ -238,7 +238,7 @@ table{max-width:80%;border-collapse:collapse;border-spacing:0;background-color:t
     
     margin-bottom:18px;
     }
-.table th,.table td{padding:8px;line-height:18px;text-align:center;vertical-align:top;border-top:1px solid #469BD7;}
+.table th,.table td{padding:5px;line-height:18px;text-align:center;vertical-align:top;border-top:1px solid #469BD7;}
 .table th{font-weight:bold;}
 .table thead th{vertical-align:bottom;}
 .table colgroup+thead tr:first-child th,.table colgroup+thead tr:first-child td,.table thead:first-child tr:first-child th,.table thead:first-child tr:first-child td{border-top:0;}
@@ -771,7 +771,6 @@ i[class^="icon-"]{opacity:0.8;}
 }
 .companyName {
 margin-left: 25px;
-float: left;
 font-size: 25px;
 height: 40px;
 margin-top: 5%;
@@ -863,4 +862,12 @@ input {
     margin: 0 0 0px 0;
     font-size: 16px;
     
+}
+
+.oneLineLogo {
+    margin-left: 10px;
+    float: left;
+    height: 50px;
+    width: auto;
+    max-width: 120px;
 }
